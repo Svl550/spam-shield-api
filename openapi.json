@@ -1,0 +1,452 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SpamShield - Disposable Email & Fraud Detection API",
+    "description": "\nAPI haute performance con\u00e7ue pour les d\u00e9veloppeurs, SaaS et plateformes e-commerce.\nPermet de bloquer en temps r\u00e9el les faux comptes, emails temporaires (Yopmail, 10MinuteMail, etc.), \nfautes de frappe (typos) et domaines sans serveur MX.\n    ",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "Info"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Info"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pricing": {
+      "get": {
+        "tags": [
+          "Monetization"
+        ],
+        "summary": "Get Pricing Plans",
+        "description": "Retourne les formules d'abonnement disponibles pour l'API.",
+        "operationId": "get_pricing_plans_v1_pricing_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/generate-key": {
+      "post": {
+        "tags": [
+          "Monetization"
+        ],
+        "summary": "Generate Api Key",
+        "description": "G\u00e9n\u00e9ration s\u00e9curis\u00e9e d'une cl\u00e9 API client (utilisable via webhook de paiement).",
+        "operationId": "generate_api_key_v1_admin_generate_key_post",
+        "parameters": [
+          {
+            "name": "owner_email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Adresse email du client",
+              "title": "Owner Email"
+            },
+            "description": "Adresse email du client"
+          },
+          {
+            "name": "tier",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Formule: pro, ultra, mega",
+              "default": "pro",
+              "title": "Tier"
+            },
+            "description": "Formule: pro, ultra, mega"
+          },
+          {
+            "name": "admin_secret",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Cl\u00e9 secr\u00e8te administrateur",
+              "title": "Admin Secret"
+            },
+            "description": "Cl\u00e9 secr\u00e8te administrateur"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verify": {
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "V\u00e9rifier une adresse email unique",
+        "description": "Analyse instantan\u00e9ment un email : format, domaine jetable, MX records, et score de risque.",
+        "operationId": "verify_single_email_v1_verify_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "L'adresse email \u00e0 analyser",
+              "title": "Email"
+            },
+            "description": "L'adresse email \u00e0 analyser",
+            "example": "support@google.com"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/batch-verify": {
+      "post": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "V\u00e9rifier une liste d'adresses emails en masse",
+        "description": "Traite jusqu'\u00e0 100 emails simultan\u00e9ment en parall\u00e8le avec latence minimale.",
+        "operationId": "verify_batch_emails_v1_batch_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchVerificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchVerificationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BatchVerificationRequest": {
+        "properties": {
+          "emails": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Emails",
+            "example": [
+              "user1@gmail.com",
+              "fake@yopmail.com",
+              "ceo@company.com"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "emails"
+        ],
+        "title": "BatchVerificationRequest"
+      },
+      "BatchVerificationResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationResponse"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "processing_time_ms": {
+            "type": "number",
+            "title": "Processing Time Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "results",
+          "processing_time_ms"
+        ],
+        "title": "BatchVerificationResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerificationResponse": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "Email normalis\u00e9",
+            "example": "john.doe@gmail.com"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Statut : valid, disposable, undeliverable, typo, invalid",
+            "example": "valid"
+          },
+          "syntax_valid": {
+            "type": "boolean",
+            "title": "Syntax Valid",
+            "description": "Conforme \u00e0 la norme RFC",
+            "example": true
+          },
+          "is_disposable": {
+            "type": "boolean",
+            "title": "Is Disposable",
+            "description": "Vrai si domaine jetable / temporaire",
+            "example": false
+          },
+          "is_free": {
+            "type": "boolean",
+            "title": "Is Free",
+            "description": "Vrai si fournisseur grand public gratuit (Gmail, Yahoo...)",
+            "example": true
+          },
+          "has_mx": {
+            "type": "boolean",
+            "title": "Has Mx",
+            "description": "Vrai si le domaine poss\u00e8de des serveurs mail actifs",
+            "example": true
+          },
+          "mx_records": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Mx Records",
+            "description": "Liste des h\u00f4tes MX",
+            "default": [],
+            "example": [
+              "gmail-smtp-in.l.google.com"
+            ]
+          },
+          "did_you_mean": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Did You Mean",
+            "description": "Suggestion si faute de frappe d\u00e9tect\u00e9e",
+            "example": "user@gmail.com"
+          },
+          "risk_score": {
+            "type": "integer",
+            "title": "Risk Score",
+            "description": "Score de risque de 0 (s\u00fbr) \u00e0 100 (fraude/mort)",
+            "example": 15
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation",
+            "description": "Recommandation : accept, flag, reject",
+            "example": "accept"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons",
+            "description": "D\u00e9tails justifiant la d\u00e9cision",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "status",
+          "syntax_valid",
+          "is_disposable",
+          "is_free",
+          "has_mx",
+          "risk_score",
+          "recommendation"
+        ],
+        "title": "VerificationResponse"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      },
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
