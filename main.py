@@ -107,7 +107,7 @@ async def get_pricing_plans():
             }
         ],
         "rapidapi_marketplace_url": "https://rapidapi.com",
-        "direct_purchase_store": "https://svl.gumroad.com"
+        "direct_purchase_store": "https://ko-fi.com/s/fda9dadd03"
     }
 
 @app.post("/v1/admin/generate-key", tags=["Monetization"])
